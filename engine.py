@@ -280,6 +280,9 @@ class BattleEngine:
             if is_status_move(name):
                 actor.last_status_move = name
 
+            # Team prefix for logs
+            prefix = "[YOU]" if team_label == "player" else "[CPU]"
+            
             # Handle each action
             if name == "attack":
                 # choose fallback target
@@ -298,7 +301,7 @@ class BattleEngine:
                         protector = protectors[0]  # there should be at most one
                         protector.take_hit_for_qk = False
                         target = protector
-                        self.log.append(f"{protector.name} takes the hit for {opponents[param].name} (QK).")
+                        self.log.append(f"{prefix} {protector.name} takes the hit for {opponents[param].name} (QK).")
 
                 # compute damage
                 if actor.shortname == "RW":
@@ -316,34 +319,34 @@ class BattleEngine:
                     dmg, crit = compute_attack_damage(actor, target, 50, 60)
 
                 target.take_damage(dmg)
-                self.log.append(f"{actor.name} attacks {target.name} for {dmg}{' (CRIT)' if crit else ''}.")
+                self.log.append(f"{prefix} {actor.name} attacks {target.name} for {dmg}{' (CRIT)' if crit else ''}.")
                 actor.acted_this_round = True
 
             elif name == "heroic_raise":
                 rw_heroic_raise(allies)
-                self.log.append(f"{actor.name} uses Heroic Raise.")
+                self.log.append(f"{prefix} {actor.name} uses Heroic Raise.")
                 actor.acted_this_round = True
 
             elif name == "ruby_shield":
                 rw_ruby_shield(actor)
-                self.log.append(f"{actor.name} uses Ruby Shield.")
+                self.log.append(f"{prefix} {actor.name} uses Ruby Shield.")
                 actor.acted_this_round = True
 
             elif name == "arrow_shower":
                 hits = ea_arrow_shower(opponents)
                 for targ, dmg in hits:
-                    self.log.append(f"{targ.name} takes {dmg} AoE damage.")
-                self.log.append(f"{actor.name} uses Arrow Shower.")
+                    self.log.append(f"  → {targ.name} takes {dmg} AoE damage.")
+                self.log.append(f"{prefix} {actor.name} uses Arrow Shower.")
                 actor.acted_this_round = True
 
             elif name == "sharp_aim":
                 ea_sharp_aim(actor)
-                self.log.append(f"{actor.name} uses Sharp Aim (guarantees next attack).")
+                self.log.append(f"{prefix} {actor.name} uses Sharp Aim (guarantees next crit).")
                 actor.acted_this_round = True
 
             elif name == "shiny_flex":
                 tb_shiny_flex(actor)
-                self.log.append(f"{actor.name} uses Shiny Flex.")
+                self.log.append(f"{prefix} {actor.name} uses Shiny Flex.")
                 actor.acted_this_round = True
 
             elif name == "stun_punch":
@@ -355,7 +358,7 @@ class BattleEngine:
                     param = random.choice(alive_targets)
                 target = opponents[param]
                 dmg = tb_stun_punch(actor, target)
-                self.log.append(f"{actor.name} hits {target.name} with Stun Punch for {dmg} and stuns them.")
+                self.log.append(f"{prefix} {actor.name} hits {target.name} with Stun Punch for {dmg} and stuns them.")
                 actor.acted_this_round = True
 
             elif name == "vital_stab":
@@ -367,28 +370,28 @@ class BattleEngine:
                     param = random.choice(alive_targets)
                 target = opponents[param]
                 dmg, heal_amt = ca_vital_stab(actor, target)
-                self.log.append(f"{actor.name} uses Vital Stab on {target.name} for {dmg} damage and heals {heal_amt} HP.")
+                self.log.append(f"{prefix} {actor.name} uses Vital Stab on {target.name} for {dmg} damage and heals {heal_amt} HP.")
                 actor.acted_this_round = True
 
             elif name == "sneak_boost":
                 ca_sneak_boost(allies)
-                self.log.append(f"{actor.name} uses Sneak Boost.")
+                self.log.append(f"{prefix} {actor.name} uses Sneak Boost.")
                 actor.acted_this_round = True
 
             elif name == "die_for_me":
                 prot = qk_die_for_me(actor, allies)
                 if prot:
-                    self.log.append(f"{actor.name} uses Die For Me: {prot.name} will absorb the first hit aimed at {actor.name} next turn.")
+                    self.log.append(f"{prefix} {actor.name} uses Die For Me: {prot.name} will absorb the first hit aimed at {actor.name} next turn.")
                 else:
-                    self.log.append(f"{actor.name} tried to use Die For Me but it failed (no available protector).")
+                    self.log.append(f"{prefix} {actor.name} tried to use Die For Me but it failed (no available protector).")
                 actor.acted_this_round = True
 
             elif name == "kings_command":
                 ok = qk_kings_command(actor)
                 if not ok:
-                    self.log.append(f"{actor.name} tried to use King's Command but buff already active — move fails.")
+                    self.log.append(f"{prefix} {actor.name} tried to use King's Command but buff already active — move fails.")
                 else:
-                    self.log.append(f"{actor.name} uses King's Command: +20% damage & +20% resist for 2 turns.")
+                    self.log.append(f"{prefix} {actor.name} uses King's Command: +20% damage & +20% resist for 2 turns.")
                 actor.acted_this_round = True
 
             else:
