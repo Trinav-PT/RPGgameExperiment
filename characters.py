@@ -62,7 +62,7 @@ def create_all_character_prototypes(prefix=""):
     return [
         Character("RW", f"{prefix} Ruby Warrior", 1250, 50, 10, 70),
         Character("EA", f"{prefix} Emerald Archer", 800, 80, 15, 65),
-        Character("TB", f"{prefix} Topaz Brawler", 2000, 30, 5, 105),   # TB nerfed to 2000 HP
+        Character("TB", f"{prefix} Topaz Brawler", 2000, 30, 5, 105),
         Character("CA", f"{prefix} Crystal Assassin", 700, 100, 25, 85),
         Character("QK", f"{prefix} Quartz King", 1790, 35, 5, 185),
     ]
