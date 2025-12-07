@@ -115,7 +115,7 @@ def ea_attack(user, target):
     return compute_attack_damage(user, target, 100, 150)
 
 def tb_attack(user, target):
-    return compute_attack_damage(user, target, 400, 550)
+    return compute_attack_damage(user, target, 400, 450)
 
 def ca_attack(user, target):
     return compute_attack_damage(user, target, 200, 270)
