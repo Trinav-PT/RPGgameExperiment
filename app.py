@@ -1,6 +1,6 @@
 # app.py
 import streamlit as st
-from characters import create_all_character_prototypes, clone_character, Character
+from characters import create_all_characters, clone_character, Character
 from engine import BattleEngine
 import random
 
