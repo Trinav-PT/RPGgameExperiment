@@ -2,19 +2,14 @@
 import random
 from copy import deepcopy
 from characters import (
-    create_all_character_prototypes, clone_character if False else None
-)
-# Note: we'll implement clone by copying prototypes manually to avoid circular import;
-# but to keep module small, we'll import prototypes and clone via deepcopy.
-
-from characters import Character, create_all_character_prototypes, \
-    rw_attack, ea_attack, tb_attack, ca_attack, qk_attack, \
-    rw_heroic_raise, rw_ruby_shield, ea_arrow_shower, ea_sharp_aim, \
-    tb_shiny_flex, tb_stun_punch, ca_vital_stab, ca_sneak_boost, \
+    Character, create_all_character_prototypes,
+    rw_attack, ea_attack, tb_attack, ca_attack, qk_attack,
+    rw_heroic_raise, rw_ruby_shield, ea_arrow_shower, ea_sharp_aim,
+    tb_shiny_flex, tb_stun_punch, ca_vital_stab, ca_sneak_boost,
     qk_die_for_me, qk_kings_command, diceroll, clamp
+)
 
-# We'll provide a small wrapper clone function:
-from copy import deepcopy
+# Clone function using deepcopy
 def clone_character(proto):
     return deepcopy(proto)
 
@@ -303,7 +298,7 @@ class BattleEngine:
                         protector = protectors[0]  # there should be at most one
                         protector.take_hit_for_qk = False
                         target = protector
-                        self.log.append(f"{protector.name} takes the hit for {param} (QK).")
+                        self.log.append(f"{protector.name} takes the hit for {opponents[param].name} (QK).")
 
                 # compute damage
                 if actor.shortname == "RW":
@@ -317,6 +312,7 @@ class BattleEngine:
                 elif actor.shortname == "QK":
                     dmg, crit = qk_attack(actor, target)
                 else:
+                    from characters import compute_attack_damage
                     dmg, crit = compute_attack_damage(actor, target, 50, 60)
 
                 target.take_damage(dmg)
@@ -334,7 +330,7 @@ class BattleEngine:
                 actor.acted_this_round = True
 
             elif name == "arrow_shower":
-                hits = ea_arrow_shower(actor, opponents)
+                hits = ea_arrow_shower(opponents)
                 for targ, dmg in hits:
                     self.log.append(f"{targ.name} takes {dmg} AoE damage.")
                 self.log.append(f"{actor.name} uses Arrow Shower.")
