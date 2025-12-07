@@ -1,7 +1,6 @@
-# app.py
 import streamlit as st
 from characters import create_all_character_prototypes, Character
-from engine import BattleEngine
+from engine import BattleEngine, is_status_move
 import random
 
 st.set_page_config(page_title="Turn-Based Battle", layout="wide")
@@ -17,7 +16,7 @@ if "engine" not in st.session_state:
     st.session_state.engine = eng
     st.session_state.phase = "team_select"  # phases: team_select, in_battle
     st.session_state.selected_indices = []
-    st.session_state.player_action_choices = {}  # idx -> (action, param)
+    st.session_state.player_action_choices = {}
     st.session_state.last_error = ""
 
 engine: BattleEngine = st.session_state.engine
@@ -66,14 +65,14 @@ if st.session_state.phase == "team_select":
         engine.start_battle(st.session_state.selected_indices, cpu_indices)
         st.session_state.phase = "in_battle"
         st.session_state.player_action_choices = {}
-        st.experimental_rerun()
+        st.rerun()
     elif st.button("Start Quick Battle (random)"):
         player_indices = random.sample(range(len(prototypes)), 3)
         cpu_indices = engine.cpu_pick_random_team_indices()
         engine.start_battle(player_indices, cpu_indices)
         st.session_state.phase = "in_battle"
         st.session_state.player_action_choices = {}
-        st.experimental_rerun()
+        st.rerun()
     st.stop()
 
 # In-battle UI
@@ -187,7 +186,6 @@ col1, col2 = st.columns([1,1])
 with col1:
     if st.button("Confirm Moves (lock in)"):
         # Attempt to set actions on engine
-        # Convert heal_single label to engine action name "heal_single" to match engine code
         actions_list = []
         for i in range(len(player_team)):
             if i in player_choices:
@@ -202,7 +200,7 @@ with col1:
             # pick cpu actions and resolve
             engine._choose_cpu_actions()
             engine.resolve_round()
-            st.experimental_rerun()
+            st.rerun()
 
 with col2:
     if st.button("Auto-play 1 Round (random moves)"):
@@ -251,7 +249,7 @@ with col2:
         engine.set_player_actions(rand_actions)
         engine._choose_cpu_actions()
         engine.resolve_round()
-        st.experimental_rerun()
+        st.rerun()
 
 # show battle log
 st.markdown("---")
@@ -267,7 +265,7 @@ if engine.all_dead(engine.get_cpu_team()):
         st.session_state.selected_indices = []
         st.session_state.player_action_choices = {}
         st.session_state.engine = BattleEngine(prototypes, prototypes)
-        st.experimental_rerun()
+        st.rerun()
 
 if engine.all_dead(engine.get_player_team()):
     st.error("All your characters are defeated — YOU LOSE.")
@@ -276,4 +274,4 @@ if engine.all_dead(engine.get_player_team()):
         st.session_state.selected_indices = []
         st.session_state.player_action_choices = {}
         st.session_state.engine = BattleEngine(prototypes, prototypes)
-        st.experimental_rerun()
+        st.rerun()
